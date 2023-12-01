@@ -19,7 +19,7 @@ import pip
 import pandas
 import gc
 import shutil
-
+warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
 
 def import_or_install(package):
@@ -949,14 +949,14 @@ from dateutil.relativedelta import relativedelta
 
 def check_monthly_revenue():
 
-    df = pd.read_pickle("history/tables/monthly_report.pkl")
+    df = pd.read_hdf("history/tables/monthly_report.h5", 'df')
 
     if df.loc['1101 台泥', '2017-10-10']['當月營收'] == '8387381':
         print("fix monthly report errors")
         df = df.reset_index()
         df['date'] = [d + relativedelta(months=1) for d in df['date']]
         df.set_index(['stock_id', 'date'], inplace=True)
-        df.to_pickle("history/tables/monthly_report.pkl")
+        df.to_hdf("history/tables/monthly_report.h5", 'df')
         print("done")
         commit("monthly_report")
 
@@ -970,8 +970,8 @@ def to_pickle(df, name):
         os.mkdir(os.path.join('history', 'tables'))
 
 
-    fname = os.path.join('history', 'tables', name + '.pkl')
-    newfname = os.path.join('history', 'tables', 'new' + name + '.pkl')
+    fname = os.path.join('history', 'tables', name + '.h5')
+    newfname = os.path.join('history', 'tables', 'new' + name + '.h5')
 
     # refine patch for monthly revenue
 
@@ -981,7 +981,7 @@ def to_pickle(df, name):
     if os.path.isfile(fname):
         
         print('read pickle')
-        old_df = pd.read_pickle(fname)
+        old_df = pd.read_hdf(fname, 'df')
         gc.collect()
         
         print('append pickle')
@@ -999,12 +999,12 @@ def to_pickle(df, name):
         gc.collect()
         
         print('save pickle')
-        old_df.to_pickle(newfname)
+        old_df.to_hdf(newfname, 'df')
         os.remove(fname)
         os.rename(newfname, fname)
     else:
         df = df[~df.index.duplicated(keep='last')]
-        df.to_pickle(fname)
+        df.to_hdf(fname, 'df')
         old_df = df
 
     if not os.path.isfile(date_range_record_file):
@@ -1521,7 +1521,7 @@ def to_db(tbs):
              .sort_values(['stock_id', 'date'])
              .drop_duplicates(['stock_id', 'date'])
              .set_index(['stock_id', 'date'])
-             .to_pickle(os.path.join('history', 'tables', i + '.pkl')))
+             .to_hdf(os.path.join('history', 'tables', i + '.h5'), 'df'))
 
     if not os.path.isfile(date_range_record_file):
         pickle.dump({}, open(date_range_record_file, 'wb'))
@@ -1601,7 +1601,7 @@ def commit(*commit_tables):
         if tname not in commit_tables:
             continue
 
-        if fname[-4:] != '.pkl':
+        if fname[-3:] != '.h5':
             continue
 
         fdir = os.path.join(fitems, tname)
@@ -1620,7 +1620,7 @@ def commit(*commit_tables):
             os.mkdir(fdir)
 
         try:
-            df = pd.read_pickle(fname)
+            df = pd.read_hdf(fname, 'df')
         except:
             print("**檔案過大，無法成功commit", fname)
             continue
@@ -1669,13 +1669,13 @@ def commit(*commit_tables):
                 print(tname, '--', name)
                 fitem = os.path.join(fdir, name.replace('+', '_').replace('/', '_'))
                 #series.reset_index()\
-                #    .pivot("date", "stock_id")[name].to_pickle(fitem + '.pkl')
-                df[name].to_pickle(fitem + '.pkl')
+                #    .pivot("date", "stock_id")[name].to_hdf(fitem + '.h5', 'df')
+                df[name].to_hdf(fitem + '.h5', 'df')
         else:
             for name in items:
                 print(tname, '--', name)
                 fitem = os.path.join(fdir, name.replace('+', '_').replace('/', '_'))
-                df[["date", "stock_id", name]].reset_index().pivot(index="date", columns="stock_id")[name].to_pickle(fitem + '.pkl')
+                df[["date", "stock_id", name]].reset_index().pivot(index="date", columns="stock_id")[name].to_hdf(fitem + '.h5', 'df')
 
 import urllib.request
 import pickle

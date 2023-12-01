@@ -23,7 +23,7 @@ class Data():
             if not os.path.isdir(path):
                 continue
                             
-            items = [f[:-4] for f in os.listdir(path)]
+            items = [f[:-3] for f in os.listdir(path)]
             for item in items:
                 if item not in self.col2table:
                     self.col2table[item] = []
@@ -41,7 +41,7 @@ class Data():
                     
             table = candidates[0]
             
-        df = pd.read_pickle(os.path.join('history', 'items', table, name + '.pkl'))
+        df = pd.read_hdf(os.path.join('history', 'items', table, name + '.h5'), 'df')
         
         return df.loc[:self.date.strftime("%Y-%m-%d")].iloc[-amount:]
 

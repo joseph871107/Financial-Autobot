@@ -142,3 +142,4 @@ __MACOSX
 /*.ipynb
 *.pkl
 *.pickle
+*.h5

@@ -1,4 +1,5 @@
-pandas==2.1.1
+pandas
+tables
 requests
 tqdm
 seaborn
