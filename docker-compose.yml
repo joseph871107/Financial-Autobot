@@ -3,6 +3,7 @@ version: '3'
 services:
   jupyter:
     build: .
+    container_name: finlab_autobot_jupyter
     restart: always
     working_dir: /workspace
     volumes:

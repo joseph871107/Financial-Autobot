@@ -139,7 +139,6 @@ ui-tests/.pnp.*
 __MACOSX
 .jupyter
 
-/*.py
 /*.ipynb
 *.pkl
 *.pickle
