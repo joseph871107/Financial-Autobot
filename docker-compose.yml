@@ -2,10 +2,7 @@ version: '3'
 
 services:
   jupyter:
-    build:
-      context: .
-      network: host
-    container_name: finlab_autobot_jupyter
+    build: .
     restart: always
     working_dir: /workspace
     volumes:
@@ -18,4 +15,5 @@ services:
           reservations:
             devices:
               - driver: nvidia
+                count: 'all'
                 capabilities: [gpu]
