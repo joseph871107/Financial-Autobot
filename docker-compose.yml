@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  jupyter:
+    build:
+      context: .
+      network: host
+    container_name: finlab_autobot_jupyter
+    restart: always
+    working_dir: /workspace
+    volumes:
+      - .jupyter:/root/.jupyter
+      - .:/workspace
+    ports:
+      - 8888:8888
+    deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                capabilities: [gpu]

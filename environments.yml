@@ -1,0 +1,11 @@
+name: finlab
+dependencies:
+  - python~=3.7
+  - conda-forge::implicit
+  - bottleneck
+  - ta-lib==0.4.19
+  - lightgbm
+  - cython
+  - anaconda::tensorflow-gpu==2.4.1
+  - jupyterlab
+  - conda-forge::ipywidgets
